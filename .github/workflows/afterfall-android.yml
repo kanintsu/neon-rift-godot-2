@@ -61,6 +61,23 @@ jobs:
           cache: true
           verbose: true
 
+      - name: Runtime smoke test
+        shell: bash
+        run: |
+          GODOT="$(find "$HOME/.local/share/godot/godot_executable" -maxdepth 1 -type f -name 'Godot*linux*x86_64' -print -quit)"
+          test -n "$GODOT"
+          set +e
+          timeout 8s "$GODOT" --headless --path AfterfallPlayable --quit-after 3 --verbose 2>&1 | tee /tmp/afterfall-runtime.log
+          CODE=${PIPESTATUS[0]}
+          set -e
+          if grep -E "SCRIPT ERROR|Parse Error|Invalid (call|access)|Attempt to call|ERROR: Failed to load script" /tmp/afterfall-runtime.log; then
+            echo "Runtime validation found Godot script errors."
+            exit 1
+          fi
+          if [ "$CODE" -ne 0 ] && [ "$CODE" -ne 124 ]; then
+            exit "$CODE"
+          fi
+
       - name: Verify APK
         shell: bash
         run: |
