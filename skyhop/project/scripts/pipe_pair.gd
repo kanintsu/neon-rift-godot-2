@@ -29,9 +29,9 @@ func freeze() -> void:
 func _build_collision() -> void:
 	for child in get_children():
 		child.queue_free()
-	var top_h := max(40.0, gap_center - gap_size * 0.5)
-	var bottom_y := gap_center + gap_size * 0.5
-	var bottom_h := max(40.0, GROUND_Y - bottom_y)
+	var top_h: float = maxf(40.0, gap_center - gap_size * 0.5)
+	var bottom_y: float = gap_center + gap_size * 0.5
+	var bottom_h: float = maxf(40.0, GROUND_Y - bottom_y)
 	_make_wall(Vector2(0, top_h * 0.5), Vector2(pipe_width, top_h))
 	_make_wall(Vector2(0, bottom_y + bottom_h * 0.5), Vector2(pipe_width, bottom_h))
 
@@ -48,9 +48,9 @@ func _make_wall(center: Vector2, size: Vector2) -> void:
 	add_child(body)
 
 func _draw() -> void:
-	var top_h := max(40.0, gap_center - gap_size * 0.5)
-	var bottom_y := gap_center + gap_size * 0.5
-	var bottom_h := max(40.0, GROUND_Y - bottom_y)
+	var top_h: float = maxf(40.0, gap_center - gap_size * 0.5)
+	var bottom_y: float = gap_center + gap_size * 0.5
+	var bottom_h: float = maxf(40.0, GROUND_Y - bottom_y)
 	_draw_pipe(Rect2(-pipe_width * 0.5, 0, pipe_width, top_h), false)
 	_draw_pipe(Rect2(-pipe_width * 0.5, bottom_y, pipe_width, bottom_h), true)
 
