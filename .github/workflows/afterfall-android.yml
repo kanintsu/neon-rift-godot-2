@@ -61,6 +61,33 @@ jobs:
           cache: true
           verbose: true
 
+      - name: Package local Godot toolchain
+        shell: bash
+        run: |
+          set -e
+          mkdir -p toolchain/godot
+          mkdir -p toolchain/templates/4.7.2.stable
+          mkdir -p toolchain/android-sdk/build-tools
+          mkdir -p toolchain/android-sdk/platform-tools
+          GODOT="$(find "$HOME/.local/share/godot/godot_executable" -maxdepth 1 -type f -name 'Godot*linux*x86_64' -print -quit)"
+          test -n "$GODOT"
+          cp "$GODOT" toolchain/godot/
+          chmod +x toolchain/godot/*
+          find "$HOME/.local/share/godot/export_templates" -type f -name 'android_*.apk' -exec cp {} toolchain/templates/4.7.2.stable/ \;
+          test -f toolchain/templates/4.7.2.stable/android_debug.apk
+          BUILD_TOOLS="$(find /usr/local/lib/android/sdk/build-tools -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          cp -a "$BUILD_TOOLS" toolchain/android-sdk/build-tools/
+          cp -a /usr/local/lib/android/sdk/platform-tools/. toolchain/android-sdk/platform-tools/
+          find toolchain -maxdepth 4 -type f -printf '%p %k KB\n' | head -80
+
+      - name: Upload local Godot toolchain
+        uses: actions/upload-artifact@v4
+        with:
+          name: Godot-4.7.2-Local-Toolchain
+          path: toolchain
+          if-no-files-found: error
+          retention-days: 2
+
       - name: Runtime smoke test
         shell: bash
         run: |
